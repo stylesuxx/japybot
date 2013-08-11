@@ -1,4 +1,5 @@
-import sys, os, inspect
+import sys, os, inspect, imp
+from command import Command
 
 class Commands(object):
     """" Import all available commands from a specific directory. """
@@ -11,20 +12,23 @@ class Commands(object):
     def load(self):
         """ This allows to load the plugins from the directory. May also be invoked during runtime. """
         self.commands = {}
-        modules = {}
         oldcwd = os.getcwd()
-        os.chdir(self.directory)
-        for filename in os.listdir(self.directory):
-            if filename.endswith(".py"):
-                modname = filename[:-3]
-                modules[self.directory + '.' + modname] = getattr(__import__(self.name + '.' + modname), modname)
-                available = inspect.getmembers(modules[self.directory + '.' + modname])
-                for name, obj in available:
-                    if name == "CommandImplementation":
-                        # TODO: Check if subclass of Command
-                        if inspect.isclass(obj):
+        
+        for plugin in os.walk(self.directory).next()[1]:
+            os.chdir(self.directory + plugin)
+
+            for filename in os.listdir(self.directory + plugin):
+                if filename.endswith(".py"):
+                    modname = filename[:-3]
+                    module = imp.load_source( modname, os.getcwd() + "/" + filename)
+                    available = inspect.getmembers(module)
+                    
+                    for name, obj in available:
+                        if inspect.isclass(obj) and issubclass(obj, Command) and not inspect.isabstract(obj):
                             instance = obj()
-                            self.commands[instance.name()] = obj
+                            self.commands[instance.command()] = obj
+
+            os.chdir(self.directory)
         os.chdir(oldcwd)
 
     def getAll(self):

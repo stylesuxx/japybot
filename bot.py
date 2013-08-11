@@ -7,7 +7,7 @@ class Bot:
         self.user = self.jid.getNode()
         self.domain = self.jid.getDomain()
         self.pwd = pwd
-        self.conn = xmpp.Client(self.domain) #, debug=[])
+        self.conn = xmpp.Client(self.domain, debug=[])
         self.ignore = []
 
         path = os.getcwd() + '/plugins/'
@@ -86,7 +86,8 @@ class Bot:
 
     def processor(self, conn, msg):
         """ Handle incomming messages """
-        thread.start_new_thread(self.threaded, (conn, msg))
+        #thread.start_new_thread(self.threaded, (conn, msg))
+        self.threaded(conn, msg)
 
     def loop(self):
         """ Do nothing except handling new xmpp stanzas. """
