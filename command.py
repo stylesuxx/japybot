@@ -1,11 +1,12 @@
 import abc
+from plugin import Plugin
 
-class Command(object):
+class Command(Plugin):
     """ This abstact Baseclass has to be implemented by each custom Command. """
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractproperty
-    def name(self):
+    def command(self):
         """ The command string. Alphanumeric, lowercase only. """
         pass
 
