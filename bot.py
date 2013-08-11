@@ -86,6 +86,7 @@ class Bot:
 
     def processor(self, conn, msg):
         """ Handle incomming messages """
+        #TODO: Threading needs fixing. There are problems with idle times.
         #thread.start_new_thread(self.threaded, (conn, msg))
         self.threaded(conn, msg)
 

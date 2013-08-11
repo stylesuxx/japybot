@@ -13,17 +13,13 @@ class Commands(object):
         """ Load all available commands. """
         self.commands = {}
         oldcwd = os.getcwd()
-        
         for plugin in os.walk(self.directory).next()[1]:
             os.chdir(self.directory + plugin)
-
             for filename in os.listdir(self.directory + plugin):
                 if filename.endswith(".py"):
                     modname = filename[:-3]
                     module = imp.load_source( modname, os.getcwd() + "/" + filename)
-                    available = inspect.getmembers(module)
-                    
-                    for name, obj in available:
+                    for name, obj in inspect.getmembers(module):
                         if inspect.isclass(obj) and issubclass(obj, Command) and not inspect.isabstract(obj):
                             instance = obj()
                             self.commands[instance.command()] = obj
