@@ -1,5 +1,5 @@
 import sys, os, inspect, imp
-from command import Command
+from plugin import Command
 
 class Commands(object):
     """" Import all available commands from a specific directory. """
@@ -10,7 +10,7 @@ class Commands(object):
         self.load()
 
     def load(self):
-        """ This allows to load the plugins from the directory. May also be invoked during runtime. """
+        """ Load all available commands. """
         self.commands = {}
         oldcwd = os.getcwd()
         

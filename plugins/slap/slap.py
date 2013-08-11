@@ -1,5 +1,5 @@
 import abc
-from command import Command
+from plugin import Command
 
 class CommandImplementation(Command):
     _name = 'slap'
