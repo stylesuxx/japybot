@@ -1,17 +1,25 @@
 import sys, os, inspect, imp
-from plugin import Command
+from plugin import Plugin, Command
 
-class Commands(object):
-    """" Import all available commands from a specific directory. """
+class PluginLoader(object):
+    """" Import all available Plugins. """
     def __init__(self, directory):
-        self.commands = {}
+        self.plugins = {}
         self.directory = directory
         self.name = os.path.basename(os.path.normpath(self.directory))
-        self.load()
+
+    def get(self, cls):
+        """ Get Plugins by class. """
+        toReturn = {}
+        for name, obj in self.plugins.iteritems():
+            if inspect.isclass(obj) and issubclass(obj, cls) and not inspect.isabstract(obj):
+                toReturn[name] = obj
+
+        return toReturn                
 
     def load(self):
-        """ Load all available commands. """
-        self.commands = {}
+        """ Load all the Plugins. """
+        self.plugins = {}
         oldcwd = os.getcwd()
         for plugin in os.walk(self.directory).next()[1]:
             os.chdir(self.directory + plugin)
@@ -20,16 +28,12 @@ class Commands(object):
                     modname = filename[:-3]
                     module = imp.load_source( modname, os.getcwd() + "/" + filename)
                     for name, obj in inspect.getmembers(module):
-                        if inspect.isclass(obj) and issubclass(obj, Command) and not inspect.isabstract(obj):
+                        if inspect.isclass(obj) and issubclass(obj, Plugin) and not inspect.isabstract(obj):
                             instance = obj()
-                            self.commands[instance.command()] = obj
+                            self.plugins[instance.name()] = obj
 
             os.chdir(self.directory)
         os.chdir(oldcwd)
-
-    def getAll(self):
-        """ Return a dictionary with all available commands and their classes. """
-        return self.commands
 
     def getHelp(self):
         """ Returns the Helptext for the built in functions and for every installed command. """
@@ -39,17 +43,9 @@ class Commands(object):
         toReturn += '--------------\n'
         toReturn += 'Available commands:\n'
 
-        for name in self.commands.keys():
+        for name in self.get(Command):
             toReturn += name + ': '
-            cmd = self.commands[name]()
+            cmd = self.plugins[name]()
             toReturn += cmd.help() + '\n'
-
-        return toReturn
-
-    def reload(self):
-        """ Reloads the list of available commands, updates the dictionary and returns all available commands. """
-        self.load()
-        toReturn = 'Reloaded command list. Available commands:\n'
-        toReturn += ', '.join(set(self.commands))
 
         return toReturn

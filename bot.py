@@ -1,5 +1,7 @@
 import sys, os, xmpp, thread
+from plugin import Command
 from commands import Commands
+from pluginLoader import PluginLoader
 
 class Bot:
     def __init__(self, jid, pwd):
@@ -9,9 +11,9 @@ class Bot:
         self.pwd = pwd
         self.conn = xmpp.Client(self.domain, debug=[])
         self.ignore = []
-
         path = os.getcwd() + '/plugins/'
-        self.commands = Commands(path)
+        self.pluginLoader = PluginLoader(path)
+        self.commands = {}
 
     def connect(self):
         """ Connect the bot to the server. """
@@ -39,6 +41,10 @@ class Bot:
 
         print "Bot connected to server."
 
+    def loadPlugins(self):
+        self.pluginLoader.load()
+        self.commands = self.pluginLoader.get(Command)
+
     def join(self, server, channel, nick):
         """ Join a room on a specific server with a specific nick. """
         room = channel + '@' + server + '/' + nick
@@ -55,7 +61,6 @@ class Bot:
         
         if user not in self.ignore:
             text = msg.getBody()
-            commands = self.commands.getAll()
 
             reply = ''
             public = False
@@ -65,14 +70,14 @@ class Bot:
                 else: command, args = text, ''
                 cmd = command.lower()
 
-                if cmd in commands:
-                    i = commands[cmd]()
+                if cmd in self.commands:
+                    i = self.commands[cmd]()
                     public =i.public()
                     reply = i.process(args)
                 elif cmd == 'help':
-                    reply = self.commands.getHelp()
+                    reply = self.pluginLoader.getHelp()
                 elif cmd == 'reload':
-                    reply = self.commands.reload()
+                    reply = self.loadPlugins()
 
             #self.roster.delItem('stylesuxx@jabber.1337.af/Notebook')
             #self.roster.delItem('stylesuxx@jabber.1337.af')
@@ -104,5 +109,6 @@ if len(sys.argv) < 6:
 else:
     bot = Bot(sys.argv[1], sys.argv[2])
     bot.connect()
+    bot.loadPlugins()
     bot.join(sys.argv[4], sys.argv[5], sys.argv[3])
     bot.loop()
