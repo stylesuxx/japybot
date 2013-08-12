@@ -14,6 +14,7 @@ class Bot:
         path = os.getcwd() + '/plugins/'
         self.pluginLoader = PluginLoader(path)
         self.commands = {}
+        self.commandsInstances = {}
 
     def connect(self):
         """ Connect the bot to the server. """
@@ -44,6 +45,10 @@ class Bot:
     def loadPlugins(self):
         self.pluginLoader.load()
         self.commands = self.pluginLoader.get(Command)
+        self.commandsInstances = {}
+        
+        for name in self.commands:
+            self.commandsInstances[name] = self.commands[name]()
 
     def join(self, server, channel, nick):
         """ Join a room on a specific server with a specific nick. """
@@ -70,14 +75,14 @@ class Bot:
                 else: command, args = text, ''
                 cmd = command.lower()
 
-                if cmd in self.commands:
-                    i = self.commands[cmd]()
-                    public =i.public()
-                    reply = i.process(args)
+                if cmd in self.commandsInstances:
+                    reply = self.commandsInstances[cmd].process(args)
+                    public = self.commandsInstances[cmd].public()
                 elif cmd == 'help':
                     reply = self.pluginLoader.getHelp()
                 elif cmd == 'reload':
-                    reply = self.loadPlugins()
+                    self.loadPlugins()
+                    reply = 'Reloaded plugins.'
 
             #self.roster.delItem('stylesuxx@jabber.1337.af/Notebook')
             #self.roster.delItem('stylesuxx@jabber.1337.af')
