@@ -37,3 +37,11 @@ class Command(Plugin):
     def process(self, arguments):
         """ Processes the user input and returns a reply. """
         return
+
+class Parser(Command):
+    """ This abstract Baseclass has to be implemented by each Parser Plugin. """
+
+    @abc.abstractmethod
+    def parse(self, message):
+        """ Parse the message and do whatever you need to do. """
+        return
