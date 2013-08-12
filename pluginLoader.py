@@ -1,5 +1,5 @@
 import sys, os, inspect, imp
-from plugin import Plugin, Command
+from plugin import Plugin, Command, Parser
 
 class PluginLoader(object):
     """" Import all available Plugins. """
@@ -10,12 +10,12 @@ class PluginLoader(object):
 
     def get(self, cls):
         """ Get Plugins by class. """
-        toReturn = {}
+        plugins = {}
         for name, obj in self.plugins.iteritems():
             if inspect.isclass(obj) and issubclass(obj, cls) and not inspect.isabstract(obj):
-                toReturn[name] = obj
+                plugins[name] = obj
 
-        return toReturn                
+        return plugins                
 
     def load(self):
         """ Load all the Plugins. """
@@ -30,7 +30,7 @@ class PluginLoader(object):
                     for name, obj in inspect.getmembers(module):
                         if inspect.isclass(obj) and issubclass(obj, Plugin) and not inspect.isabstract(obj):
                             instance = obj()
-                            self.plugins[instance.name()] = obj
+                            self.plugins[instance.command()] = obj
             os.chdir(self.directory)
         os.chdir(oldcwd)
 

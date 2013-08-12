@@ -1,5 +1,5 @@
 import sys, os, thread, xmpp
-from plugin import Command
+from plugin import Plugin, Command, Parser
 from pluginLoader import PluginLoader
 
 class Bot:
@@ -8,12 +8,13 @@ class Bot:
         self.user = self.jid.getNode()
         self.domain = self.jid.getDomain()
         self.pwd = pwd
-        self.conn = xmpp.Client(self.domain)#, debug=[])
+        self.conn = xmpp.Client(self.domain, debug=[])
         self.ignore = []
         path = os.getcwd() + '/plugins/'
         self.pluginLoader = PluginLoader(path)
         self.commands = {}
-        self.commandsInstances = {}
+        self.parsers = {}
+        self.pluginInstances = {}
 
     def connect(self):
         """ Connect the bot to the server. """
@@ -43,11 +44,12 @@ class Bot:
 
     def loadPlugins(self):
         self.pluginLoader.load()
-        self.commands = self.pluginLoader.get(Command)
-        self.commandsInstances = {}
+        self.commands = self.pluginLoader.get(Plugin)
+        self.parsers = self.pluginLoader.get(Parser)
+        self.pluginInstances = {}
         
         for name in self.commands:
-            self.commandsInstances[name] = self.commands[name]()
+            self.pluginInstances[name] = self.commands[name]()
 
     def join(self, server, channel, nick):
         """ Join a room on a specific server with a specific nick. """
@@ -68,13 +70,17 @@ class Bot:
             public = False
 
             if text:
+                # Pass message to all parsers
+                for name in self.parsers:
+                    self.pluginInstances[name].parse(text)
+
                 if text.find(' ') + 1: command, args = text.split(' ', 1)
                 else: command, args = text, ''
                 
                 cmd = command.lower()
-                if cmd in self.commandsInstances:
-                    reply = self.commandsInstances[cmd].process(args)
-                    public = self.commandsInstances[cmd].public()
+                if cmd in self.pluginInstances:
+                    reply = self.pluginInstances[cmd].process(args)
+                    public = self.pluginInstances[cmd].public()
                 elif cmd == 'help':
                     reply = self.pluginLoader.getHelp()
                 elif cmd == 'reload':
