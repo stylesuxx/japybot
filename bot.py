@@ -1,6 +1,5 @@
-import sys, os, xmpp, thread
+import sys, os, thread, xmpp
 from plugin import Command
-from commands import Commands
 from pluginLoader import PluginLoader
 
 class Bot:
@@ -9,7 +8,7 @@ class Bot:
         self.user = self.jid.getNode()
         self.domain = self.jid.getDomain()
         self.pwd = pwd
-        self.conn = xmpp.Client(self.domain, debug=[])
+        self.conn = xmpp.Client(self.domain)#, debug=[])
         self.ignore = []
         path = os.getcwd() + '/plugins/'
         self.pluginLoader = PluginLoader(path)
@@ -40,7 +39,7 @@ class Bot:
         self.conn.sendInitPresence()
         self.roster = self.conn.getRoster()
 
-        print "Bot connected to server."
+        print "Bot connected to %s" %self.domain
 
     def loadPlugins(self):
         self.pluginLoader.load()
@@ -63,18 +62,16 @@ class Bot:
     def threaded(self, conn, msg):
         """ Process the stanzas. """
         user = msg.getFrom()
-        
         if user not in self.ignore:
             text = msg.getBody()
-
             reply = ''
             public = False
 
             if text:
                 if text.find(' ') + 1: command, args = text.split(' ', 1)
                 else: command, args = text, ''
+                
                 cmd = command.lower()
-
                 if cmd in self.commandsInstances:
                     reply = self.commandsInstances[cmd].process(args)
                     public = self.commandsInstances[cmd].public()
@@ -97,8 +94,8 @@ class Bot:
     def processor(self, conn, msg):
         """ Handle incomming messages """
         #TODO: Threading needs fixing. There are problems with idle times.
-        #thread.start_new_thread(self.threaded, (conn, msg))
-        self.threaded(conn, msg)
+        thread.start_new_thread(self.threaded, (conn, msg))
+        #self.threaded(conn, msg)
 
     def loop(self):
         """ Do nothing except handling new xmpp stanzas. """
