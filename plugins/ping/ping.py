@@ -7,9 +7,13 @@ class CommandImplementation(Command):
     _help = 'Wait for it - pong.'
     _description = 'Ping - Pong'
     _public = True
+    _version = "0.1"
 
     def name(self):
         return self._name
+
+    def version(self):
+        return self._version
 
     def command(self):
         return self._command

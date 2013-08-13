@@ -7,9 +7,13 @@ class CommandImplementation(Command):
     _help = 'Slap somebody with a trout.'
     _description = 'Slap somebody with a trout.'
     _public = True
+    _version = "0.1"
 
     def name(self):
         return self._name
+
+    def version(self):
+        return self._version
 
     def command(self):
         return self._command

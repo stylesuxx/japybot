@@ -14,6 +14,11 @@ class Plugin(object):
         """ The Plugins description. """
         pass
 
+    @abc.abstractproperty
+    def version(self):
+        """ The Plugins version. """
+        pass
+
 class Command(Plugin):
     """ This abstact Baseclass has to be implemented by each Command Plugin. """
     __metaclass__ = abc.ABCMeta

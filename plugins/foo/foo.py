@@ -7,12 +7,16 @@ class ParserImplementation(Parser):
     _help = 'Show the foo count.'
     _description = 'Show the foo count'
     _public = True
+    _version = "0.1"
 
     def __init__(self):
         self.count = 0
 
     def name(self):
         return self._name
+
+    def version(self):
+        return self._version
 
     def command(self):
         return self._command
