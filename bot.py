@@ -84,7 +84,7 @@ class Bot:
                 cmd = command.lower()
                 if cmd in self.pluginInstances:
                     reply = self.pluginInstances[cmd].process(args, isAdmin)
-                    public = self.pluginInstances[cmd].public()
+                    public = self.pluginInstances[cmd].public
                 elif cmd == 'help':
                     reply = self.pluginLoader.getHelp(isAdmin)
                 elif cmd == 'reload':

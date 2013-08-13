@@ -40,7 +40,7 @@ class PluginLoader(object):
                     for name, obj in inspect.getmembers(module):
                         if inspect.isclass(obj) and issubclass(obj, Plugin) and not inspect.isabstract(obj):
                             instance = obj()
-                            self.plugins[instance.command()] = obj
+                            self.plugins[instance.command] = obj
             os.chdir(self.directory)        
         os.chdir(oldcwd)
     

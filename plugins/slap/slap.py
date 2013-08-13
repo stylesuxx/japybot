@@ -9,23 +9,28 @@ class CommandImplementation(Command):
     _public = True
     _version = "0.1"
 
+    @property
     def name(self):
         return self._name
 
+    @property
     def version(self):
         return self._version
 
+    @property
     def command(self):
         return self._command
 
-    def help(self, isAdmin):
-        return self._help
-
+    @property
     def description(self):
         return self._description
 
+    @property
     def public(self):
         return self._public
+
+    def help(self, isAdmin):
+        return self._help
 
     def process(self, args, isAdmin):
         if args != '':
