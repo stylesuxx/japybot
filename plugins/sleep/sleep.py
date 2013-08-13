@@ -23,6 +23,6 @@ class CommandImplementation(Command):
     def public(self):
         return self._public
 
-    def process(self, args):
+    def process(self, args, isAdmin):
         time.sleep(10)
         return 'Returning from sleep.'

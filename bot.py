@@ -3,11 +3,12 @@ from plugin import Plugin, Command, Parser
 from pluginLoader import PluginLoader
 
 class Bot:
-    def __init__(self, jid, pwd):
+    def __init__(self, jid, pwd, admins):
         self.jid = xmpp.JID(jid)
         self.user = self.jid.getNode()
         self.domain = self.jid.getDomain()
         self.pwd = pwd
+        self.admins = admins.split(',')
         self.conn = xmpp.Client(self.domain, debug=[])
         self.ignore = []
         path = os.getcwd() + '/plugins/'
@@ -64,6 +65,8 @@ class Bot:
     def threaded(self, conn, msg):
         """ Process the stanzas. """
         user = msg.getFrom()
+        jid = user.getStripped()
+        isAdmin = jid in self.admins
         if user not in self.ignore:
             text = msg.getBody()
             reply = ''
@@ -79,13 +82,14 @@ class Bot:
                 
                 cmd = command.lower()
                 if cmd in self.pluginInstances:
-                    reply = self.pluginInstances[cmd].process(args)
+                    reply = self.pluginInstances[cmd].process(args, isAdmin)
                     public = self.pluginInstances[cmd].public()
                 elif cmd == 'help':
                     reply = self.pluginLoader.getHelp()
                 elif cmd == 'reload':
-                    self.loadPlugins()
-                    reply = 'Reloaded plugins.'
+                    if isAdmin:
+                        self.loadPlugins()
+                        reply = 'Reloaded plugins.'
 
             #self.roster.delItem('stylesuxx@jabber.1337.af/Notebook')
             #self.roster.delItem('stylesuxx@jabber.1337.af')
@@ -99,9 +103,7 @@ class Bot:
 
     def processor(self, conn, msg):
         """ Handle incomming messages """
-        #TODO: Threading needs fixing. There are problems with idle times.
         thread.start_new_thread(self.threaded, (conn, msg))
-        #self.threaded(conn, msg)
 
     def loop(self):
         """ Do nothing except handling new xmpp stanzas. """
@@ -112,11 +114,11 @@ class Bot:
             pass
 
 if len(sys.argv) < 6:
-    print "Usage: bot.py username@server.net password nick server channel"
+    print "Usage: bot.py username@server.net password nick server channel admin1,admin2,admin3"
 
 else:
-    bot = Bot(sys.argv[1], sys.argv[2])
-    bot.connect()
+    bot = Bot(sys.argv[1], sys.argv[2], sys.argv[6])
     bot.loadPlugins()
+    bot.connect()
     bot.join(sys.argv[4], sys.argv[5], sys.argv[3])
     bot.loop()

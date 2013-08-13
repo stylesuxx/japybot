@@ -23,7 +23,7 @@ class CommandImplementation(Command):
     def public(self):
         return self._public
 
-    def process(self, args):
+    def process(self, args, isAdmin):
         if args != '':
             return '/me slaps ' + args + ' around a bit with a large trout.'
         return ''

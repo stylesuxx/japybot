@@ -26,7 +26,7 @@ class ParserImplementation(Parser):
     def public(self):
         return self._public
 
-    def process(self, args):
+    def process(self, args, isAdmin):
         return 'Foo count: ' + str(self.count)
 
     def parse(self, msg):

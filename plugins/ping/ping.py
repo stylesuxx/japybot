@@ -23,5 +23,5 @@ class CommandImplementation(Command):
     def public(self):
         return self._public
 
-    def process(self, args):
+    def process(self, args, isAdmin):
         return 'pong'

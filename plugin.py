@@ -34,7 +34,7 @@ class Command(Plugin):
         pass
 
     @abc.abstractmethod
-    def process(self, arguments):
+    def process(self, arguments, isAdmin):
         """ Processes the user input and returns a reply. """
         return
 
