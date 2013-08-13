@@ -7,14 +7,18 @@ class CommandImplementation(Command):
     _help = 'Sleep 10 sec.'
     _description = 'Sleep for 10 seconds. This is mostly for testing and debugging purposes.'
     _public = True
+    _version = "0.1"
 
     def name(self):
         return self._name
 
+    def version(self):
+        return self._version
+
     def command(self):
         return self._command
 
-    def help(self):
+    def help(self, isAdmin):
         return self._help
 
     def description(self):
@@ -23,6 +27,6 @@ class CommandImplementation(Command):
     def public(self):
         return self._public
 
-    def process(self, args):
+    def process(self, args, isAdmin):
         time.sleep(10)
         return 'Returning from sleep.'

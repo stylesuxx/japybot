@@ -14,6 +14,16 @@ class Plugin(object):
         """ The Plugins description. """
         pass
 
+    @abc.abstractproperty
+    def version(self):
+        """ The Plugins version. """
+        pass
+
+    @abc.abstractproperty
+    def help(self, isAdmin):
+        """ Return the Helptext. The helptext may differ depending if the user is admin. """
+        pass
+
 class Command(Plugin):
     """ This abstact Baseclass has to be implemented by each Command Plugin. """
     __metaclass__ = abc.ABCMeta
@@ -24,18 +34,13 @@ class Command(Plugin):
         pass
 
     @abc.abstractproperty
-    def help(self):
-        """ The Helptext. """
-        pass
-
-    @abc.abstractproperty
     def public(self):
         """ Indicates if the reply should be posted to the muc or in private. """
         pass
 
     @abc.abstractmethod
-    def process(self, arguments):
-        """ Processes the user input and returns a reply. """
+    def process(self, arguments, isAdmin):
+        """ Processes the user input and returns a reply. If the requesting user is an admin, isAdmin is true. """
         return
 
 class Parser(Command):

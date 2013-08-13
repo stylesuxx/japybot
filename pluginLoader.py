@@ -1,4 +1,4 @@
-import sys, os, inspect, imp
+import sys, os, inspect, imp, zipfile
 from plugin import Plugin, Command, Parser
 
 class PluginLoader(object):
@@ -20,7 +20,17 @@ class PluginLoader(object):
     def load(self):
         """ Load all the Plugins. """
         oldcwd = os.getcwd()
+        os.chdir(self.directory)
         self.plugins = {}
+
+        # Extract present zip archives and remove the archive afterwards.
+        for files in os.listdir(self.directory):
+            if files.endswith(".zip"):
+                zipFile = zipfile.ZipFile(files, "r")
+                for f in zipFile.infolist():
+                    zipFile.extract(f)
+                os.remove(files)
+
         for plugin in os.walk(self.directory).next()[1]:
             os.chdir(self.directory + plugin)
             for filename in os.listdir(self.directory + plugin):
@@ -31,10 +41,10 @@ class PluginLoader(object):
                         if inspect.isclass(obj) and issubclass(obj, Plugin) and not inspect.isabstract(obj):
                             instance = obj()
                             self.plugins[instance.command()] = obj
-            os.chdir(self.directory)
+            os.chdir(self.directory)        
         os.chdir(oldcwd)
-
-    def getHelp(self):
+    
+    def getHelp(self, isAdmin):
         """ Returns the Helptext for the built in functions and for every installed command. """
         toReturn = "Global Help:\n"
         toReturn += "Built in commands:\n"
@@ -45,6 +55,6 @@ class PluginLoader(object):
         for name in self.get(Command):
             toReturn += name + ': '
             cmd = self.plugins[name]()
-            toReturn += cmd.help() + '\n'
+            toReturn += cmd.help(isAdmin) + '\n'
 
         return toReturn
