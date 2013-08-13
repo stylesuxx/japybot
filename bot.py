@@ -89,7 +89,7 @@ class Bot:
                 elif cmd == 'reload':
                     if isAdmin:
                         self.loadPlugins()
-                        reply = 'Reloaded plugins.'
+                        reply = 'Reloaded plugins.\nAvailable Plugins: ' + (', ').join(self.pluginInstances.keys())
 
             #self.roster.delItem('stylesuxx@jabber.1337.af/Notebook')
             #self.roster.delItem('stylesuxx@jabber.1337.af')
