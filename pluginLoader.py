@@ -23,7 +23,7 @@ class PluginLoader(object):
         os.chdir(self.directory)
         self.plugins = {}
 
-        # Unzip present archives
+        # Extract present zip archives
         for files in os.listdir(self.directory):
             if files.endswith(".zip"):
                 zipFile = zipfile.ZipFile(files, "r")
