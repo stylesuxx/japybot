@@ -40,7 +40,7 @@ class Command(Plugin):
 
     @abc.abstractmethod
     def process(self, arguments, isAdmin):
-        """ Processes the user input and returns a reply. """
+        """ Processes the user input and returns a reply. If the requesting user is an admin, isAdmin is true. """
         return
 
 class Parser(Command):
