@@ -19,7 +19,7 @@ class Plugin(object):
         """ The Plugins version. """
         pass
 
-    @abc.abstractproperty
+    @abc.abstractmethod
     def help(self, isAdmin):
         """ Return the Helptext. The helptext may differ depending if the user is admin. """
         pass
