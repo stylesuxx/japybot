@@ -23,12 +23,11 @@ class PluginLoader(object):
         os.chdir(self.directory)
         self.plugins = {}
 
-        # Extract present zip archives
+        # Extract present zip archives and remove the archive afterwards.
         for files in os.listdir(self.directory):
             if files.endswith(".zip"):
                 zipFile = zipfile.ZipFile(files, "r")
-                info = zipFile.infolist()
-                for f in info:
+                for f in zipFile.infolist():
                     zipFile.extract(f)
                 os.remove(files)
 
@@ -45,7 +44,7 @@ class PluginLoader(object):
             os.chdir(self.directory)        
         os.chdir(oldcwd)
     
-    def getHelp(self):
+    def getHelp(self, isAdmin):
         """ Returns the Helptext for the built in functions and for every installed command. """
         toReturn = "Global Help:\n"
         toReturn += "Built in commands:\n"
@@ -56,6 +55,6 @@ class PluginLoader(object):
         for name in self.get(Command):
             toReturn += name + ': '
             cmd = self.plugins[name]()
-            toReturn += cmd.help() + '\n'
+            toReturn += cmd.help(isAdmin) + '\n'
 
         return toReturn

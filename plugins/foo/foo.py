@@ -21,7 +21,7 @@ class ParserImplementation(Parser):
     def command(self):
         return self._command
 
-    def help(self):
+    def help(self, isAdmin):
         return self._help
 
     def description(self):

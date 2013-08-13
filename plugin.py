@@ -19,6 +19,11 @@ class Plugin(object):
         """ The Plugins version. """
         pass
 
+    @abc.abstractproperty
+    def help(self, isAdmin):
+        """ Return the Helptext. The helptext may differ depending if the user is admin. """
+        pass
+
 class Command(Plugin):
     """ This abstact Baseclass has to be implemented by each Command Plugin. """
     __metaclass__ = abc.ABCMeta
@@ -26,11 +31,6 @@ class Command(Plugin):
     @abc.abstractproperty
     def command(self):
         """ The command string. Alphanumeric, lowercase only. """
-        pass
-
-    @abc.abstractproperty
-    def help(self):
-        """ The Helptext. """
         pass
 
     @abc.abstractproperty

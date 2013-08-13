@@ -9,7 +9,7 @@ class Bot:
         self.domain = self.jid.getDomain()
         self.pwd = pwd
         self.admins = admins.split(',')
-        self.conn = xmpp.Client(self.domain, debug=[])
+        self.conn = xmpp.Client(self.domain)#, debug=[])
         self.ignore = []
         path = os.getcwd() + '/plugins/'
         self.pluginLoader = PluginLoader(path)
@@ -86,7 +86,7 @@ class Bot:
                     reply = self.pluginInstances[cmd].process(args, isAdmin)
                     public = self.pluginInstances[cmd].public()
                 elif cmd == 'help':
-                    reply = self.pluginLoader.getHelp()
+                    reply = self.pluginLoader.getHelp(isAdmin)
                 elif cmd == 'reload':
                     if isAdmin:
                         self.loadPlugins()
