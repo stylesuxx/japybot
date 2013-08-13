@@ -37,7 +37,7 @@ class Bot:
             print "Warning: unable to perform SASL auth os %s. Old authentication method used!" %self.domain
         
         self.conn.RegisterHandler('message', self.processor)
-        #self.conn.RegisterHandler('presence', self.presence)
+        self.conn.RegisterHandler('presence', self.presence)
         self.conn.sendInitPresence()
         self.roster = self.conn.getRoster()
 
@@ -67,6 +67,7 @@ class Bot:
         user = msg.getFrom()
         jid = user.getStripped()
         isAdmin = jid in self.admins
+        
         if user not in self.ignore:
             text = msg.getBody()
             reply = ''
@@ -91,19 +92,17 @@ class Bot:
                         self.loadPlugins()
                         reply = 'Reloaded plugins.\nAvailable Plugins: ' + (', ').join(self.pluginInstances.keys())
 
-            #self.roster.delItem('stylesuxx@jabber.1337.af/Notebook')
-            #self.roster.delItem('stylesuxx@jabber.1337.af')
-            
-            if user not in self.roster.getItems(): 
-                self.roster.Authorize(xmpp.JID(user))
-                self.roster.Subscribe(xmpp.JID(user))
-
             # Always post in private when the request was invoked from a chat.
             if msg.getType() == 'chat':
                 public = False
 
             if reply and not public: conn.send(xmpp.Message(msg.getFrom(),reply))
-            elif reply and public: print conn.send(xmpp.Message(user.getStripped(), reply, typ='groupchat'))
+            elif reply and public: conn.send(xmpp.Message(user.getStripped(), reply, typ='groupchat'))
+
+    def presence(self, conn, msg):
+        if msg.getType() == 'subscribe':
+            jid = msg.getFrom().getStripped()
+            self.roster.Authorize(jid)
 
     def processor(self, conn, msg):
         """ Handle incomming messages """
