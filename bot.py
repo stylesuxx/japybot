@@ -98,6 +98,10 @@ class Bot:
                 self.roster.Authorize(xmpp.JID(user))
                 self.roster.Subscribe(xmpp.JID(user))
 
+            # Always post in private when the request was invoked from a chat.
+            if msg.getType() == 'chat':
+                public = False
+
             if reply and not public: conn.send(xmpp.Message(msg.getFrom(),reply))
             elif reply and public: print conn.send(xmpp.Message(user.getStripped(), reply, typ='groupchat'))
 
