@@ -19,19 +19,16 @@ class PluginLoader(object):
         self.plugins = {}
 
         # Extract present zip archives and remove the archive afterwards.
-        for files in os.listdir(self.directory):
-            if files.endswith(".zip"):
-                zipFile = zipfile.ZipFile(files, "r")
-                for f in zipFile.infolist():
-                    zipFile.extract(f)
-                os.remove(files)
+        for files in [f for f in os.listdir(self.directory) if f.endswith(".zip")]:
+            zipfile.ZipFile(files, "r").extractall()
+            os.remove(files)
 
         for plugin in os.walk(self.directory).next()[1]:
             os.chdir(self.directory + plugin)
             for filename in os.listdir(self.directory + plugin):
                 if filename.endswith(".py"):
                     modname = filename[:-3]
-                    module = imp.load_source( modname, os.getcwd() + "/" + filename)
+                    module = imp.load_source(modname, os.getcwd() + "/" + filename)
                     for name, obj in inspect.getmembers(module):
                         if inspect.isclass(obj) and issubclass(obj, Plugin) and not inspect.isabstract(obj):
                             instance = obj()
