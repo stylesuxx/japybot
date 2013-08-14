@@ -26,17 +26,16 @@ class PluginLoader(object):
             except zipfile.BadZipfile:
                 pass
 
+        # Build the plugin dictionary
         for plugin in os.walk(self.directory).next()[1]:
             os.chdir(self.directory + plugin)
-            for filename in os.listdir(self.directory + plugin):
-                if filename.endswith(".py"):
-                    modname = filename[:-3]
-                    module = imp.load_source(modname, os.getcwd() + "/" + filename)
-                    for name, obj in inspect.getmembers(module):
+            for filename in [f for f in os.listdir(self.directory + plugin) if f.endswith(".py")]:
+                modname = filename[:-3]
+                module = imp.load_source(modname, os.getcwd() + "/" + filename)
+                for name, obj in inspect.getmembers(module):
                         if inspect.isclass(obj) and issubclass(obj, Plugin) and not inspect.isabstract(obj):
                             instance = obj()
-                            self.plugins[instance.command] = obj
-            os.chdir(self.directory)        
+                            self.plugins[instance.command] = obj        
         os.chdir(self.home)
     
     def getHelp(self, isAdmin):
