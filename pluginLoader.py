@@ -47,7 +47,6 @@ class PluginLoader(object):
         toReturn += 'Available commands:\n'
 
         for name in self.get(Command):
-            toReturn += name + ': '
-            toReturn += self.plugins[name]().help(isAdmin) + '\n'
+            toReturn += name + ': ' + self.plugins[name]().help(isAdmin) + '\n'
 
         return toReturn
