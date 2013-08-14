@@ -16,12 +16,16 @@ class Plugin(object):
 
     @abc.abstractproperty
     def version(self):
-        """ The Plugins version. """
+        """ The Plugins version String. """
         pass
 
     @abc.abstractmethod
     def help(self, isAdmin):
-        """ Return the Helptext. The helptext may differ depending if the user is admin. """
+        """
+        Return the Helptext.
+        
+        :param isAdmin: Indicates if the requesting user is an admin
+        """
         pass
 
 class Command(Plugin):
@@ -40,7 +44,12 @@ class Command(Plugin):
 
     @abc.abstractmethod
     def process(self, arguments, isAdmin):
-        """ Processes the user input and returns a reply. If the requesting user is an admin, isAdmin is true. """
+        """
+        Processes the user input and returns a reply.
+
+        :param arguments: Arguments from the request. This is the remaining string after the command
+        :param isAdmin: True if requesting user is an admin
+        """
         return
 
 class Parser(Command):
@@ -48,5 +57,9 @@ class Parser(Command):
 
     @abc.abstractmethod
     def parse(self, message):
-        """ Parse the message and do whatever you need to do. """
+        """
+        Parse the message and do whatever you need to do.
+
+        :param message: The message to parse
+        """
         return
