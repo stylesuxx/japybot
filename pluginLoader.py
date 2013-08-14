@@ -14,14 +14,17 @@ class PluginLoader(object):
         return dict((k, v) for k, v in self.plugins.iteritems() if issubclass(v, cls))                
 
     def load(self):
-        """ Load all the Plugins. """
+        """ Load/Reload all the Plugins. """
         os.chdir(self.directory)
         self.plugins = {}
 
         # Extract present zip archives and remove the archive afterwards.
         for files in [f for f in os.listdir(self.directory) if f.endswith(".zip")]:
-            zipfile.ZipFile(files, "r").extractall()
-            os.remove(files)
+            try:
+                zipfile.ZipFile(files, "r").extractall()
+                os.remove(files)
+            except zipfile.BadZipfile:
+                pass
 
         for plugin in os.walk(self.directory).next()[1]:
             os.chdir(self.directory + plugin)
