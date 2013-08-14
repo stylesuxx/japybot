@@ -4,7 +4,7 @@ japybot
 Python Jabber Bot with with easily extensible Plugin System.
 
 # Usage
-`python bot.py username@server password nick server channel`
+`python bot.py username@server password nick server channel admin@server,admin1@server,admin2@server`
 
 The parameters are quite self explanatory.
 
@@ -21,5 +21,6 @@ All the Plugins are loaded from the plugin directory when the bot starts up. Unt
 
 All zip files in the Plugins directory are extracted and deleted when the plugins are loaded.
 
-# Examples
-Check out the plugin interface or take a look in the plugins folder.
+This basically means that updating a plugin is as easy as putting the zipped plugin in the plugin folder and then starting or reloading the bot.
+
+Check out the plugins description property if you want to learn more about each plugin. 
