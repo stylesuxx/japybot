@@ -6,20 +6,15 @@ class PluginLoader(object):
     def __init__(self, directory):
         self.plugins = {}
         self.directory = directory
+        self.home = os.getcwd()
         self.name = os.path.basename(os.path.normpath(self.directory))
 
     def get(self, cls):
-        """ Get Plugins by class. """
-        plugins = {}
-        for name, obj in self.plugins.iteritems():
-            if inspect.isclass(obj) and issubclass(obj, cls) and not inspect.isabstract(obj):
-                plugins[name] = obj
-
-        return plugins                
+        """ Return plugins with the requestet class. """
+        return dict((k, v) for k, v in self.plugins.iteritems() if issubclass(v, cls))                
 
     def load(self):
         """ Load all the Plugins. """
-        oldcwd = os.getcwd()
         os.chdir(self.directory)
         self.plugins = {}
 
@@ -42,10 +37,10 @@ class PluginLoader(object):
                             instance = obj()
                             self.plugins[instance.command] = obj
             os.chdir(self.directory)        
-        os.chdir(oldcwd)
+        os.chdir(self.home)
     
     def getHelp(self, isAdmin):
-        """ Returns the Helptext for the built in functions and for every installed command. """
+        """ Returns the Helptext for the built in functions and for every installed plugin. """
         toReturn = "Global Help:\n"
         toReturn += "Built in commands:\n"
         toReturn += 'reload: Reloads the Plugin directory. Plugins may be add on runtime.\n'
