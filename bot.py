@@ -52,13 +52,13 @@ class Bot:
         for name in self.commands:
             self.pluginInstances[name] = self.commands[name]()
 
-    def join(self, server, channel, nick):
+    def join(self, server, channel, nick, pwd):
         """ Join a room on a specific server with a specific nick. """
         room = channel + '@' + server + '/' + nick
         self.ignore.append(channel + '@' + server)
 
         presence = xmpp.Presence(to=room)
-        presence.setTag('x', namespace = xmpp.NS_MUC)#.setTagData('password', '')
+        presence.setTag('x', namespace = xmpp.NS_MUC).setTagData('password', pwd)
         presence.getTag('x').addChild('history',{'maxchars':'0','maxstanzas':'0'})
         self.conn.send(presence)
 
@@ -95,7 +95,6 @@ class Bot:
             # Always post in private when the request was invoked from a chat.
             if msg.getType() == 'chat':
                 public = False
-
             if reply and not public: conn.send(xmpp.Message(msg.getFrom(),reply))
             elif reply and public: conn.send(xmpp.Message(user.getStripped(), reply, typ='groupchat'))
 
@@ -103,6 +102,9 @@ class Bot:
         if msg.getType() == 'subscribe':
             jid = msg.getFrom().getStripped()
             self.roster.Authorize(jid)
+        if msg.getType() == 'error':
+            # TODO: maybe this should be sent to the admins in priv?
+            print msg.getFrom().getStripped() + ': ' + msg.getError()
 
     def processor(self, conn, msg):
         """ Handle incomming messages """
@@ -123,7 +125,6 @@ parser.add_argument('admins', metavar='ADMIN', type=str, nargs='+', help='The bo
 parser.add_argument('-s', dest='server', metavar='SERVER', nargs='?', help='The conference server')
 parser.add_argument('-r', dest='room', metavar='ROOM', nargs='?', help='The room to join')
 parser.add_argument('-n', dest='nick', metavar='NICK', nargs='?', help='The nick for the room')
-#TODO
 parser.add_argument('-p', dest='passRoom', metavar='PASS', nargs='?', help='The password for the room')
 #TODO
 parser.add_argument('--reg', dest='register', action='store_const', const=True, default=False, help='Register Jid if available')
@@ -133,5 +134,6 @@ bot = Bot(args['user'], args['pass'], args['admins'])
 bot.loadPlugins()
 bot.connect()
 if args['room'] and args['server'] and args['nick']:
-    bot.join(args['server'], args['room'], args['nick'])
+    print 'Joining room'
+    bot.join(args['server'], args['room'], args['nick'], args['passRoom'])
 bot.loop()
