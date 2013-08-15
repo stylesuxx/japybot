@@ -95,7 +95,7 @@ class Bot:
             # Always post in private when the request was invoked from a chat.
             if msg.getType() == 'chat':
                 public = False
-            if reply and not public: conn.send(xmpp.Message(msg.getFrom(),reply))
+            if reply and not public: conn.send(xmpp.Message(msg.getFrom(), reply))
             elif reply and public: conn.send(xmpp.Message(user.getStripped(), reply, typ='groupchat'))
 
     def presence(self, conn, msg):
@@ -103,8 +103,9 @@ class Bot:
             jid = msg.getFrom().getStripped()
             self.roster.Authorize(jid)
         if msg.getType() == 'error':
-            # TODO: maybe this should be sent to the admins in priv?
-            print msg.getFrom().getStripped() + ': ' + msg.getError()
+            for admin in self.admins:
+                reply = 'Presence Error: ' + msg.getFrom().getStripped() + ' - ' + msg.getError()
+                conn.send(xmpp.Message(admin, reply))
 
     def processor(self, conn, msg):
         """ Handle incomming messages """
