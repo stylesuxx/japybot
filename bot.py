@@ -1,4 +1,4 @@
-import sys, os, thread, xmpp
+import sys, os, thread, xmpp, argparse
 from plugin import Plugin, Command, Parser
 from pluginLoader import PluginLoader
 
@@ -8,7 +8,7 @@ class Bot:
         self.user = self.jid.getNode()
         self.domain = self.jid.getDomain()
         self.pwd = pwd
-        self.admins = admins.split(',')
+        self.admins = admins
         self.conn = xmpp.Client(self.domain)#, debug=[])
         self.ignore = []
         path = os.getcwd() + '/plugins/'
@@ -116,12 +116,22 @@ class Bot:
         except KeyboardInterrupt:
             pass
 
-if len(sys.argv) < 6:
-    print "Usage: bot.py username@server.net password nick server channel admin1,admin2,admin3"
+parser = argparse.ArgumentParser(description='Python Jabber Bot.')
+parser.add_argument('user', metavar='JID', type=str, help='user@server.de')
+parser.add_argument('pass', metavar='PASS', type=str, help='The password')
+parser.add_argument('admins', metavar='ADMIN', type=str, nargs='+', help='The bots admins')
+parser.add_argument('-s', dest='server', metavar='SERVER', nargs='?', help='The conference server')
+parser.add_argument('-r', dest='room', metavar='ROOM', nargs='?', help='The room to join')
+parser.add_argument('-n', dest='nick', metavar='NICK', nargs='?', help='The nick for the room')
+#TODO
+parser.add_argument('-p', dest='passRoom', metavar='PASS', nargs='?', help='The password for the room')
+#TODO
+parser.add_argument('--reg', dest='register', action='store_const', const=True, default=False, help='Register Jid if available')
 
-else:
-    bot = Bot(sys.argv[1], sys.argv[2], sys.argv[6])
-    bot.loadPlugins()
-    bot.connect()
-    bot.join(sys.argv[4], sys.argv[5], sys.argv[3])
-    bot.loop()
+args = vars(parser.parse_args())
+bot = Bot(args['user'], args['pass'], args['admins'])
+bot.loadPlugins()
+bot.connect()
+if args['room'] and args['server'] and args['nick']:
+    bot.join(args['server'], args['room'], args['nick'])
+bot.loop()
