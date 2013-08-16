@@ -58,7 +58,14 @@ class Bot:
             self.pluginInstances[name] = self.commands[name]()
 
     def join(self, server, channel, nick, pwd):
-        """ Join a room on a specific server with a specific nick. """
+        """
+        Join a room.
+
+        :param server: The conference server
+        :param channel: The channel to jouin
+        :param nick: The bots nick in the channel
+        :param pwd: The channels password 
+        """
         room = channel + '@' + server + '/' + nick
         self.ignore.append(channel + '@' + server)
 
@@ -100,10 +107,17 @@ class Bot:
             # Always post in private when the request was invoked from a chat.
             if msg.getType() == 'chat':
                 public = False
+
             if reply and not public: conn.send(xmpp.Message(msg.getFrom(), reply))
             elif reply and public: conn.send(xmpp.Message(user.getStripped(), reply, typ='groupchat'))
 
     def presence(self, conn, msg):
+        """
+        Handles presence stanzas.
+
+        :param conn: The established connection
+        :param msg: The Presence stanza to process
+        """
         if msg.getType() == 'subscribe':
             jid = msg.getFrom().getStripped()
             self.roster.Authorize(jid)
@@ -113,7 +127,12 @@ class Bot:
                 conn.send(xmpp.Message(admin, reply))
 
     def processor(self, conn, msg):
-        """ Handle incomming messages """
+        """
+        Handle incomming messages.
+
+        :param conn: The established connection
+        :param msg: The message to process
+        """
         thread.start_new_thread(self.threaded, (conn, msg))
 
     def loop(self):
@@ -139,6 +158,5 @@ bot = Bot(args['user'], args['pass'], args['admins'], args['register'])
 bot.loadPlugins()
 bot.connect()
 if args['room'] and args['server'] and args['nick']:
-    print 'Joining room'
     bot.join(args['server'], args['room'], args['nick'], args['passRoom'])
 bot.loop()
