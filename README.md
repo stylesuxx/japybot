@@ -4,27 +4,24 @@ japybot
 Python Jabber Bot with with easily extensible Plugin System.
 
 # Usage
-`python bot.py -h
-usage: bot.py [-h] [-s [SERVER]] [-r [ROOM]] [-n [NICK]] [-p [PASS]] [--reg]
-              JID PASS ADMIN [ADMIN ...]
+              python bot.py -h
+              usage: bot.py [-h] [-s [SERVER]] [-r [ROOM]] [-n [NICK]] [-p [PASS]] [--reg]
+                            JID PASS ADMIN [ADMIN ...]
 
-Python Jabber Bot.
+              Python Jabber Bot.
 
-positional arguments:
-  JID          user@server.de
-  PASS         The password
-  ADMIN        The bots admins
+              positional arguments:
+                JID          user@server.de
+                PASS         The password
+                ADMIN        The bots admins
 
-optional arguments:
-  -h, --help   show this help message and exit
-  -s [SERVER]  The conference server
-  -r [ROOM]    The room to join
-  -n [NICK]    The nick for the room
-  -p [PASS]    The password for the room
-  --reg        Register Jid if available
-`
-
-The parameters are quite self explanatory.
+              optional arguments:
+                -h, --help   show this help message and exit
+                -s [SERVER]  The conference server
+                -r [ROOM]    The room to join
+                -n [NICK]    The nick for the room
+                -p [PASS]    The password for the room
+                --reg        Register Jid if available
 
 # Plugins
 There are two types of Plugins:
